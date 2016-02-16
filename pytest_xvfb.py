@@ -110,3 +110,8 @@ def pytest_collection_modifyitems(items):
             skipif_marker = pytest.mark.skipif(
                 True, reason="Skipped with Xvfb")
             item.add_marker(skipif_marker)
+
+
+@pytest.fixture
+def xvfb(request):
+    return request.config.xvfb

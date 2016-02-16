@@ -137,3 +137,22 @@ def test_no_xvfb_marker(testdir, args, outcome):
     """)
     res = testdir.runpytest(*args)
     res.stdout.fnmatch_lines('*= {0} in *'.format(outcome))
+
+
+def test_xvfb_fixture(testdir):
+    testdir.makepyfile("""
+        import os
+
+        def test_display(xvfb):
+            assert ':{}'.format(xvfb.display) == os.environ['DISPLAY']
+
+        def test_screen(xvfb):
+            assert xvfb.width == 800
+            assert xvfb.height == 600
+            assert xvfb.colordepth == 16
+
+        def test_args(xvfb):
+            assert xvfb.args == []
+    """)
+    result = testdir.runpytest()
+    assert result.ret == 0

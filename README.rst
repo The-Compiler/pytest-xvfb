@@ -35,6 +35,14 @@ inspect a failure).
 You can mark tests with ``@pytest.mark.no_xvfb`` to skip them when they're
 running with Xvfb.
 
+A ``xvfb`` fixture is available with the following attributes:
+
+- ``width``: The configured width of the screen.
+- ``height``: The configured height of the screen.
+- ``colordepth``: The configured colordepth of the screen.
+- ``args``: The arguments to be passed to Xvfb.
+- ``display``: The display number (as int) which is used.
+
 Contributing
 ------------
 
