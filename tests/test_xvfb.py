@@ -156,3 +156,20 @@ def test_xvfb_fixture(testdir):
     """)
     result = testdir.runpytest()
     assert result.ret == 0
+
+
+def test_early_display(monkeypatch, testdir):
+    """Make sure DISPLAY is set in a session-scoped fixture already."""
+    monkeypatch.delenv('DISPLAY')
+    testdir.makepyfile("""
+        import os
+        import pytest
+
+        @pytest.yield_fixture(scope='session', autouse=True)
+        def fixt():
+            assert 'DISPLAY' in os.environ
+            yield
+
+        def test_foo():
+            pass
+    """)
