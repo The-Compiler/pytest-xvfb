@@ -1,5 +1,9 @@
 /.cache
-/pytest_xvfb.egg-info
+/*.egg-info
 /__pycache__
 /.tox
+/dist
+/htmlcov
+/coverage.xml
+/.coverage
 *.pyc
