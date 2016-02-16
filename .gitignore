@@ -1,0 +1,5 @@
+/.cache
+/pytest_xvfb.egg-info
+/__pycache__
+/.tox
+*.pyc
