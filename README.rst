@@ -25,11 +25,18 @@ Usage
 -----
 
 This plugin runs your testsuite with `Xvfb`_ to avoid popping up windows during
-GUI tests or allow them to run on systems without a display.
+GUI tests or allow them to run on systems without a display (like a CI).
 
 If Xvfb is not installed, it does nothing so your tests will still work.
 
-You can also pass ``--no-xvfb`` to explicitly turn off Xvfb (e.g. to visually
+If you're currently using ``xvfb-run`` in something like ``.travis.yml``,
+simply remove it and install this plugin instead - then you'll also have the
+benefits of Xvfb locally.
+
+Features
+--------
+
+You can pass ``--no-xvfb`` to explicitly turn off Xvfb (e.g. to visually
 inspect a failure).
 
 You can mark tests with ``@pytest.mark.no_xvfb`` to skip them when they're
