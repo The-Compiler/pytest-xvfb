@@ -32,6 +32,9 @@ If Xvfb is not installed, it does nothing so your tests will still work.
 You can also pass ``--no-xvfb`` to explicitly turn off Xvfb (e.g. to visually
 inspect a failure).
 
+You can mark tests with ``@pytest.mark.no_xvfb`` to skip them when they're
+running with Xvfb.
+
 Contributing
 ------------
 

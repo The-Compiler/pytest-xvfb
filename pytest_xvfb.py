@@ -102,3 +102,11 @@ def pytest_configure(config):
 def pytest_unconfigure(config):
     if config.xvfb is not None:
         config.xvfb.stop()
+
+
+def pytest_collection_modifyitems(items):
+    for item in items:
+        if item.get_marker('no_xvfb') and item.config.xvfb is not None:
+            skipif_marker = pytest.mark.skipif(
+                True, reason="Skipped with Xvfb")
+            item.add_marker(skipif_marker)

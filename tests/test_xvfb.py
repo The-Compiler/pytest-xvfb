@@ -118,3 +118,22 @@ def test_failing_start(testdir, monkeypatch):
         "INTERNALERROR> *XvfbExitedError: Xvfb exited with exit code 1"
     ])
     assert 'OSError' not in str(result.stderr)
+
+
+@pytest.mark.parametrize('args, outcome', [
+    ([], '1 passed, 1 skipped'),
+    (['--no-xvfb'], '2 passed'),
+])
+def test_no_xvfb_marker(testdir, args, outcome):
+    testdir.makepyfile("""
+        import pytest
+
+        @pytest.mark.no_xvfb
+        def test_marked():
+            pass
+
+        def test_unmarked():
+            pass
+    """)
+    res = testdir.runpytest(*args)
+    res.stdout.fnmatch_lines('*= {0} in *'.format(outcome))
