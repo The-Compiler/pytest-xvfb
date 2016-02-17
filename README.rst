@@ -16,7 +16,7 @@ A pytest plugin to run Xvfb for tests.
 Installation
 ------------
 
-You can install "pytest-xvfb" via `pip`_ from `PyPI`_::
+You can install "`pytest-xvfb`_" via `pip`_ from `PyPI`_::
 
     $ pip install pytest-xvfb
 
@@ -75,6 +75,7 @@ Issues
 
 If you encounter any problems, please `file an issue`_ along with a detailed description.
 
+.. _`pytest-xvfb`: https://pypi.python.org/pypi/pytest-xvfb/
 .. _`Xvfb`: http://www.x.org/releases/X11R7.6/doc/man/man1/Xvfb.1.xhtml
 .. _`Cookiecutter`: https://github.com/audreyr/cookiecutter
 .. _`@hackebrot`: https://github.com/hackebrot
