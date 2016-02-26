@@ -173,3 +173,15 @@ def test_early_display(monkeypatch, testdir):
         def test_foo():
             pass
     """)
+
+
+def test_strict_markers(testdir):
+    testdir.makepyfile("""
+        import pytest
+
+        @pytest.mark.no_xvfb
+        def test_marked():
+            pass
+    """)
+    result = testdir.runpytest('--strict')
+    assert result.ret == 0

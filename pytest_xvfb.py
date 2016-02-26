@@ -97,6 +97,7 @@ def pytest_configure(config):
     else:
         config.xvfb = Xvfb(config)
         config.xvfb.start()
+    config.addinivalue_line("markers", "no_xvfb: Skip test when using Xvfb")
 
 
 def pytest_unconfigure(config):
