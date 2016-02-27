@@ -185,3 +185,19 @@ def test_strict_markers(testdir):
     """)
     result = testdir.runpytest('--strict')
     assert result.ret == 0
+
+
+def test_xvfb_session_fixture(testdir):
+    """Make sure the xvfb fixture can be used from a session-wide one."""
+    testdir.makepyfile("""
+        import pytest
+
+        @pytest.fixture(scope='session')
+        def fixt(xvfb):
+            pass
+
+        def test_fixt(fixt):
+            pass
+    """)
+    result = testdir.runpytest()
+    assert result.ret == 0

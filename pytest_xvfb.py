@@ -113,6 +113,6 @@ def pytest_collection_modifyitems(items):
             item.add_marker(skipif_marker)
 
 
-@pytest.fixture
-def xvfb(request):
-    return request.config.xvfb
+@pytest.fixture(scope='session')
+def xvfb(pytestconfig):
+    return pytestconfig.xvfb
