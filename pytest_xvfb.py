@@ -5,7 +5,6 @@ import re
 import time
 import os.path
 import fnmatch
-import tempfile
 import subprocess
 
 import pytest
@@ -64,9 +63,8 @@ class Xvfb(object):
             pass
 
     def _get_free_display(self):
-        tmpdir = tempfile.gettempdir()
         pattern = '.X*-lock'
-        lockfiles = fnmatch.filter(os.listdir(tmpdir), pattern)
+        lockfiles = fnmatch.filter(os.listdir('/tmp'), pattern)
         existing_displays = [int(re.match('^\.X(\d+)-lock$', name).group(1))
                              for name in lockfiles]
         if existing_displays:

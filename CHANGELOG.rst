@@ -1,6 +1,12 @@
 pytest-xvfb changelog
 =====================
 
+v0.2.1
+------
+
+- The temporary directory searched for logfiles is now hardcoded to /tmp
+  as that's what X11 does as well.
+
 v0.2.0
 ------
 
