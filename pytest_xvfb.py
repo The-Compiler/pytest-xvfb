@@ -31,6 +31,7 @@ class Xvfb(object):
         self.height = int(config.getini('xvfb_height'))
         self.colordepth = int(config.getini('xvfb_colordepth'))
         self.args = config.getini('xvfb_args') or []
+        self.xauth = config.getini('xvfb_xauth')
         self.display = None
         self._old_display = None
         self._proc = None
@@ -41,15 +42,16 @@ class Xvfb(object):
         display_str = ':{}'.format(self.display)
         os.environ['DISPLAY'] = display_str
 
-        # Generate a Xauthority file
-        # see http://modb.oce.ulg.ac.be/mediawiki/index.php/Xvfb
-        handle, filename = tempfile.mkstemp(prefix='xvfb.',
-                                            suffix='.Xauthority')
-        os.close(handle)
-        os.environ['AUTHFILE'] = filename
-        os.environ['XAUTHORITY'] = os.environ['AUTHFILE']
-        mcookie = subprocess.check_output(['mcookie']).decode('ascii')
-        subprocess.check_call(['xauth', 'add', display_str, '.', mcookie])
+        if self.xauth:
+            # Generate a Xauthority file
+            # see http://modb.oce.ulg.ac.be/mediawiki/index.php/Xvfb
+            handle, filename = tempfile.mkstemp(prefix='xvfb.',
+                                                suffix='.Xauthority')
+            os.close(handle)
+            os.environ['AUTHFILE'] = filename
+            os.environ['XAUTHORITY'] = os.environ['AUTHFILE']
+            mcookie = subprocess.check_output(['mcookie']).decode('ascii')
+            subprocess.check_call(['xauth', 'add', display_str, '.', mcookie])
 
         cmd = ['Xvfb', display_str, '-screen', '0',
                '{}x{}x{}'.format(self.width, self.height, self.colordepth)]
@@ -77,6 +79,8 @@ class Xvfb(object):
             pass
 
     def _clear_xauthority(self):
+        if not self.xauth:
+            return
         os.remove(os.environ['XAUTHORITY'])
         for varname in ['AUTHFILE', 'XAUTHORITY']:
             del os.environ[varname]
@@ -106,6 +110,9 @@ def pytest_addoption(parser):
                   default='16')
     parser.addini('xvfb_args', 'Additional arguments for Xvfb',
                   type='linelist')
+    parser.addini('xvfb_xauth',
+                  'Generate an Xauthority token for Xvfb. Needs xauth.',
+                  default=False, type='bool')
 
 
 def pytest_configure(config):
