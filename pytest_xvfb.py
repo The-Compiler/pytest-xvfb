@@ -5,6 +5,7 @@ import re
 import time
 import os.path
 import fnmatch
+import tempfile
 import subprocess
 
 import pytest
@@ -40,6 +41,16 @@ class Xvfb(object):
         display_str = ':{}'.format(self.display)
         os.environ['DISPLAY'] = display_str
 
+        # Generate a Xauthority file
+        # see http://modb.oce.ulg.ac.be/mediawiki/index.php/Xvfb
+        handle, filename = tempfile.mkstemp(prefix='xvfb.',
+                                            suffix='.Xauthority')
+        os.close(handle)
+        os.environ['AUTHFILE'] = filename
+        os.environ['XAUTHORITY'] = os.environ['AUTHFILE']
+        mcookie = subprocess.check_output(['mcookie']).decode('ascii')
+        subprocess.check_call(['xauth', 'add', display_str, '.', mcookie])
+
         cmd = ['Xvfb', display_str, '-screen', '0',
                '{}x{}x{}'.format(self.width, self.height, self.colordepth)]
         cmd.extend(self.args)
@@ -49,18 +60,26 @@ class Xvfb(object):
         ret = self._proc.poll()
 
         if ret is not None:
+            self._clear_xauthority()
             raise XvfbExitedError("Xvfb exited with exit code {0}".format(ret))
+
 
     def stop(self):
         if self._old_display is None:
             del os.environ['DISPLAY']
         else:
             os.environ['DISPLAY'] == self._old_display
+        self._clear_xauthority()
         try:
             self._proc.terminate()
             self._proc.wait()
         except OSError:
             pass
+
+    def _clear_xauthority(self):
+        os.remove(os.environ['XAUTHORITY'])
+        for varname in ['AUTHFILE', 'XAUTHORITY']:
+            del os.environ[varname]
 
     def _get_free_display(self):
         pattern = '.X*-lock'
