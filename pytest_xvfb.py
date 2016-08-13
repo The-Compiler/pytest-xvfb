@@ -65,7 +65,6 @@ class Xvfb(object):
             self._clear_xauthority()
             raise XvfbExitedError("Xvfb exited with exit code {0}".format(ret))
 
-
     def stop(self):
         if self._old_display is None:
             del os.environ['DISPLAY']
