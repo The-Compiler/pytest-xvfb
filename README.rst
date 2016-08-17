@@ -24,10 +24,9 @@ You can install "`pytest-xvfb`_" via `pip`_ from `PyPI`_::
 Usage
 -----
 
-This plugin runs your testsuite with `Xvfb`_ to avoid popping up windows during
-GUI tests or allow them to run on systems without a display (like a CI).
+With Xvfb and the plugin installed, your testsuite automatically runs with `Xvfb`_. This allows tests to be run without windows popping up during GUI tests or on systems without a display (like a CI).
 
-If Xvfb is not installed, it does nothing so your tests will still work.
+If Xvfb is not installed, the plugin does not run and your tests will still work as normal.
 
 If you're currently using ``xvfb-run`` in something like ``.travis.yml``,
 simply remove it and install this plugin instead - then you'll also have the
