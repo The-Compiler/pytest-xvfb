@@ -99,7 +99,7 @@ def pytest_configure(config):
 
 
 def pytest_unconfigure(config):
-    if config.xvfb is not None:
+    if getattr(config, 'xvfb', None) is not None:
         config.xvfb.stop()
 
 
