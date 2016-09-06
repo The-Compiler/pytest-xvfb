@@ -32,6 +32,8 @@ class XvfbExitedError(Exception):
 
 class Xvfb(object):
 
+    RESTORED_ENVVARS = ['DISPLAY', 'AUTHFILE', 'XAUTHORITY']
+
     def __init__(self, config):
         self.width = int(config.getini('xvfb_width'))
         self.height = int(config.getini('xvfb_height'))
@@ -39,11 +41,11 @@ class Xvfb(object):
         self.args = config.getini('xvfb_args') or []
         self.xauth = config.getini('xvfb_xauth')
         self.display = None
-        self._old_display = None
+        self._old_env = None
         self._proc = None
 
     def start(self):
-        self._old_display = os.environ.get('DISPLAY', None)
+        self._save_env()
         self.display = self._get_free_display()
         display_str = ':{}'.format(self.display)
         os.environ['DISPLAY'] = display_str
@@ -72,23 +74,30 @@ class Xvfb(object):
             raise XvfbExitedError("Xvfb exited with exit code {0}".format(ret))
 
     def stop(self):
-        if self._old_display is None:
-            del os.environ['DISPLAY']
-        else:
-            os.environ['DISPLAY'] == self._old_display
         self._clear_xauthority()
+        self._restore_env()
         try:
             self._proc.terminate()
             self._proc.wait()
         except OSError:
             pass
 
+    def _save_env(self):
+        self._old_env = {}
+        for varname in self.RESTORED_ENVVARS:
+            self._old_env[varname] = os.getenv(varname)
+
+    def _restore_env(self):
+        for varname, value in self._old_env.items():
+            if value is not None:
+                os.environ[varname] = value
+            elif varname in os.environ:
+                del os.environ[varname]
+
     def _clear_xauthority(self):
         if not self.xauth:
             return
         os.remove(os.environ['XAUTHORITY'])
-        for varname in ['AUTHFILE', 'XAUTHORITY']:
-            del os.environ[varname]
 
     def _get_free_display(self):
         pattern = '.X*-lock'
