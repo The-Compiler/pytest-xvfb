@@ -5,6 +5,7 @@ import re
 import time
 import os.path
 import fnmatch
+import hashlib
 import tempfile
 import subprocess
 
@@ -17,6 +18,11 @@ def xvfb_available():
         os.access(os.path.join(path, 'Xvfb'), os.X_OK)
         for path in os.environ["PATH"].split(os.pathsep)
     )
+
+
+def generate_mcookie():
+    """Generate a random cookie suitable for xauth."""
+    return hashlib.md5(os.urandom(16)).hexdigest()
 
 
 class XvfbExitedError(Exception):
@@ -50,7 +56,7 @@ class Xvfb(object):
             os.close(handle)
             os.environ['AUTHFILE'] = filename
             os.environ['XAUTHORITY'] = os.environ['AUTHFILE']
-            mcookie = subprocess.check_output(['mcookie']).decode('ascii')
+            mcookie = generate_mcookie()
             subprocess.check_call(['xauth', 'add', display_str, '.', mcookie])
 
         cmd = ['Xvfb', display_str, '-screen', '0',
