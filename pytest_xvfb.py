@@ -57,7 +57,7 @@ class Xvfb(object):
                                                 suffix='.Xauthority')
             os.close(handle)
             os.environ['AUTHFILE'] = filename
-            os.environ['XAUTHORITY'] = os.environ['AUTHFILE']
+            os.environ['XAUTHORITY'] = filename
             mcookie = generate_mcookie()
             subprocess.check_call(['xauth', 'add', display_str, '.', mcookie])
 
@@ -85,7 +85,7 @@ class Xvfb(object):
     def _save_env(self):
         self._old_env = {}
         for varname in self.RESTORED_ENVVARS:
-            self._old_env[varname] = os.getenv(varname)
+            self._old_env[varname] = os.environ.get(varname)
 
     def _restore_env(self):
         for varname, value in self._old_env.items():

@@ -9,7 +9,7 @@ import pytest_xvfb
 
 xauth_available = any(
     os.access(os.path.join(path, 'xauth'), os.X_OK)
-    for path in os.getenv('PATH', '').split(os.pathsep)
+    for path in os.environ.get('PATH', '').split(os.pathsep)
 )
 
 
@@ -211,7 +211,7 @@ def test_xvfb_session_fixture(testdir):
 
 @pytest.mark.skipif(not xauth_available, reason='no xauth')
 def test_xvfb_with_xauth(testdir):
-    original_auth = os.getenv('XAUTHORITY')
+    original_auth = os.environ.get('XAUTHORITY')
     testdir.makeini("""
         [pytest]
         xvfb_xauth = True
@@ -221,7 +221,7 @@ def test_xvfb_with_xauth(testdir):
 
         def test_xauth():
             print('\\nXAUTHORITY: ' + os.environ['XAUTHORITY'])
-            assert os.access(os.environ['XAUTHORITY'], os.R_OK)
+            assert os.path.isfile(os.environ['XAUTHORITY'])
     """)
     result = testdir.runpytest('-s')
     # Get and parse the XAUTHORITY: line
@@ -230,5 +230,5 @@ def test_xvfb_with_xauth(testdir):
 
     assert result.ret == 0
     # Make sure the authfile is deleted
-    assert not os.path.isfile(authfile)
-    assert os.getenv('XAUTHORITY') == original_auth
+    assert not os.path.exists(authfile)
+    assert os.environ.get('XAUTHORITY') == original_auth
