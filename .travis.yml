@@ -13,6 +13,7 @@ addons:
   apt:
     packages:
     - xvfb
+    - xauth
 
 install:
   - pip install tox
