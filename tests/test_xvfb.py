@@ -222,6 +222,7 @@ def test_xvfb_with_xauth(testdir):
         def test_xauth():
             print('\\nXAUTHORITY: ' + os.environ['XAUTHORITY'])
             assert os.path.isfile(os.environ['XAUTHORITY'])
+            assert os.access(os.environ['XAUTHORITY'], os.R_OK)
     """)
     result = testdir.runpytest('-s')
     # Get and parse the XAUTHORITY: line
