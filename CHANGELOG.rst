@@ -1,6 +1,11 @@
 pytest-xvfb changelog
 =====================
 
+v0.3.0
+------
+
+- Add a new ``xvfb_xauth`` setting which creates an ``XAUTHORITY`` file.
+
 v0.2.1
 ------
 
