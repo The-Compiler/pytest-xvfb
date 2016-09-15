@@ -5,6 +5,8 @@ import re
 import time
 import os.path
 import fnmatch
+import hashlib
+import tempfile
 import subprocess
 
 import pytest
@@ -18,6 +20,11 @@ def xvfb_available():
     )
 
 
+def generate_mcookie():
+    """Generate a random cookie suitable for xauth."""
+    return hashlib.md5(os.urandom(16)).hexdigest()
+
+
 class XvfbExitedError(Exception):
 
     pass
@@ -25,20 +32,34 @@ class XvfbExitedError(Exception):
 
 class Xvfb(object):
 
+    RESTORED_ENVVARS = ['DISPLAY', 'AUTHFILE', 'XAUTHORITY']
+
     def __init__(self, config):
         self.width = int(config.getini('xvfb_width'))
         self.height = int(config.getini('xvfb_height'))
         self.colordepth = int(config.getini('xvfb_colordepth'))
         self.args = config.getini('xvfb_args') or []
+        self.xauth = config.getini('xvfb_xauth')
         self.display = None
-        self._old_display = None
+        self._old_env = None
         self._proc = None
 
     def start(self):
-        self._old_display = os.environ.get('DISPLAY', None)
+        self._save_env()
         self.display = self._get_free_display()
         display_str = ':{}'.format(self.display)
         os.environ['DISPLAY'] = display_str
+
+        if self.xauth:
+            # Generate a Xauthority file
+            # see http://modb.oce.ulg.ac.be/mediawiki/index.php/Xvfb
+            handle, filename = tempfile.mkstemp(prefix='xvfb.',
+                                                suffix='.Xauthority')
+            os.close(handle)
+            os.environ['AUTHFILE'] = filename
+            os.environ['XAUTHORITY'] = filename
+            mcookie = generate_mcookie()
+            subprocess.check_call(['xauth', 'add', display_str, '.', mcookie])
 
         cmd = ['Xvfb', display_str, '-screen', '0',
                '{}x{}x{}'.format(self.width, self.height, self.colordepth)]
@@ -49,18 +70,34 @@ class Xvfb(object):
         ret = self._proc.poll()
 
         if ret is not None:
+            self._clear_xauthority()
             raise XvfbExitedError("Xvfb exited with exit code {0}".format(ret))
 
     def stop(self):
-        if self._old_display is None:
-            del os.environ['DISPLAY']
-        else:
-            os.environ['DISPLAY'] == self._old_display
+        self._clear_xauthority()
+        self._restore_env()
         try:
             self._proc.terminate()
             self._proc.wait()
         except OSError:
             pass
+
+    def _save_env(self):
+        self._old_env = {}
+        for varname in self.RESTORED_ENVVARS:
+            self._old_env[varname] = os.environ.get(varname)
+
+    def _restore_env(self):
+        for varname, value in self._old_env.items():
+            if value is not None:
+                os.environ[varname] = value
+            elif varname in os.environ:
+                del os.environ[varname]
+
+    def _clear_xauthority(self):
+        if not self.xauth:
+            return
+        os.remove(os.environ['XAUTHORITY'])
 
     def _get_free_display(self):
         pattern = '.X*-lock'
@@ -87,6 +124,9 @@ def pytest_addoption(parser):
                   default='16')
     parser.addini('xvfb_args', 'Additional arguments for Xvfb',
                   type='linelist')
+    parser.addini('xvfb_xauth',
+                  'Generate an Xauthority token for Xvfb. Needs xauth.',
+                  default=False, type='bool')
 
 
 def pytest_configure(config):
