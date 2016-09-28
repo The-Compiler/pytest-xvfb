@@ -8,6 +8,7 @@ import fnmatch
 import hashlib
 import tempfile
 import subprocess
+import sys
 
 import pytest
 
@@ -132,6 +133,11 @@ def pytest_addoption(parser):
 def pytest_configure(config):
     if config.getoption('--no-xvfb') or not xvfb_available():
         config.xvfb = None
+        if (sys.platform.startswith('linux')
+                and 'DISPLAY' in os.environ
+                and not config.getoption('--no-xvfb')):
+            print('pytest-xvfb could not find Xvfb. '
+                  'You can install it to prevent windows from being shown.')
     else:
         config.xvfb = Xvfb(config)
         config.xvfb.start()
