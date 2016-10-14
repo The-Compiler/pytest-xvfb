@@ -9,6 +9,8 @@ import hashlib
 import tempfile
 import subprocess
 
+import pyvirtualdisplay
+
 import pytest
 
 
@@ -20,19 +22,12 @@ def xvfb_available():
     )
 
 
-def generate_mcookie():
-    """Generate a random cookie suitable for xauth."""
-    return hashlib.md5(os.urandom(16)).hexdigest()
-
-
 class XvfbExitedError(Exception):
 
     pass
 
 
 class Xvfb(object):
-
-    RESTORED_ENVVARS = ['DISPLAY', 'AUTHFILE', 'XAUTHORITY']
 
     def __init__(self, config):
         self.width = int(config.getini('xvfb_width'))
@@ -41,73 +36,22 @@ class Xvfb(object):
         self.args = config.getini('xvfb_args') or []
         self.xauth = config.getini('xvfb_xauth')
         self.display = None
-        self._old_env = None
-        self._proc = None
+        self._virtual_display = None
 
     def start(self):
-        self._save_env()
-        self.display = self._get_free_display()
-        display_str = ':{}'.format(self.display)
-        os.environ['DISPLAY'] = display_str
+        self._virtual_display = pyvirtualdisplay.Display(
+            backend='xvfb', size=(self.width, self.height),
+            color_depth=self.colordepth, use_xauth=self.xauth)
+        self._virtual_display.cmd.extend(self.args)
+        self._virtual_display.start()
+        self.display = self._virtual_display.display
 
-        if self.xauth:
-            # Generate a Xauthority file
-            # see http://modb.oce.ulg.ac.be/mediawiki/index.php/Xvfb
-            handle, filename = tempfile.mkstemp(prefix='xvfb.',
-                                                suffix='.Xauthority')
-            os.close(handle)
-            os.environ['AUTHFILE'] = filename
-            os.environ['XAUTHORITY'] = filename
-            mcookie = generate_mcookie()
-            subprocess.check_call(['xauth', 'add', display_str, '.', mcookie])
-
-        cmd = ['Xvfb', display_str, '-screen', '0',
-               '{}x{}x{}'.format(self.width, self.height, self.colordepth)]
-        cmd.extend(self.args)
-        self._proc = subprocess.Popen(cmd)
-
-        time.sleep(0.1)  # Give Xvfb a bit of time to start/fail
-        ret = self._proc.poll()
-
-        if ret is not None:
-            self._clear_xauthority()
+        if not self._virtual_display.is_alive():
+            ret = self._virtual_display.return_code
             raise XvfbExitedError("Xvfb exited with exit code {0}".format(ret))
 
     def stop(self):
-        self._clear_xauthority()
-        self._restore_env()
-        try:
-            self._proc.terminate()
-            self._proc.wait()
-        except OSError:
-            pass
-
-    def _save_env(self):
-        self._old_env = {}
-        for varname in self.RESTORED_ENVVARS:
-            self._old_env[varname] = os.environ.get(varname)
-
-    def _restore_env(self):
-        for varname, value in self._old_env.items():
-            if value is not None:
-                os.environ[varname] = value
-            elif varname in os.environ:
-                del os.environ[varname]
-
-    def _clear_xauthority(self):
-        if not self.xauth:
-            return
-        os.remove(os.environ['XAUTHORITY'])
-
-    def _get_free_display(self):
-        pattern = '.X*-lock'
-        lockfiles = fnmatch.filter(os.listdir('/tmp'), pattern)
-        existing_displays = [int(re.match('^\.X(\d+)-lock$', name).group(1))
-                             for name in lockfiles]
-        if existing_displays:
-            return max(existing_displays) + 1
-        else:
-            return 0
+        self._virtual_display.stop()
 
 
 def pytest_addoption(parser):
