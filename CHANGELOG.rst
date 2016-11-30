@@ -1,6 +1,14 @@
 pytest-xvfb changelog
 =====================
 
+v1.0.0
+------
+
+- Use `PyVirtualDisplay`_ to start/stop Xvfb
+- Show a warning on Linux if Xvfb is unavailable
+
+.. _PyVirtualDisplay: https://pypi.python.org/pypi/PyVirtualDisplay
+
 v0.3.0
 ------
 
