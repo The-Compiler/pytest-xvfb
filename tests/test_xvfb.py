@@ -55,6 +55,7 @@ def test_xvfb_unavailable(testdir, monkeypatch):
     """)
     assert os.environ['DISPLAY'] == ':42'
     result = testdir.runpytest()
+    result.stdout.fnmatch_lines('* could not find Xvfb.*')
     assert result.ret == 0
 
 
@@ -142,7 +143,7 @@ def test_no_xvfb_marker(testdir, args, outcome):
             pass
     """)
     res = testdir.runpytest(*args)
-    res.stdout.fnmatch_lines('*= {0} in *'.format(outcome))
+    res.stdout.fnmatch_lines('*= {0}*'.format(outcome))
 
 
 def test_xvfb_fixture(testdir):
