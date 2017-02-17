@@ -68,7 +68,7 @@ def pytest_addoption(parser):
     parser.addini('xvfb_colordepth', 'Color depth of the Xvfb display',
                   default='16')
     parser.addini('xvfb_args', 'Additional arguments for Xvfb',
-                  type='linelist')
+                  type='args')
     parser.addini('xvfb_xauth',
                   'Generate an Xauthority token for Xvfb. Needs xauth.',
                   default=False, type='bool')
