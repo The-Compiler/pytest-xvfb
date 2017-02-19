@@ -1,6 +1,11 @@
 pytest-xvfb changelog
 =====================
 
+v1.1.0 (unreleased)
+-------------------
+
+- The ``xvfb_args`` option is now a single line parsed with ``shlex.split``.
+
 v1.0.0
 ------
 
