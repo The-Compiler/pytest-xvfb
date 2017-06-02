@@ -49,7 +49,10 @@ class Xvfb(object):
 
         if not self._virtual_display.is_alive():
             ret = self._virtual_display.return_code
-            raise XvfbExitedError("Xvfb exited with exit code {0}".format(ret))
+            stdout = self._virtual_display.stdout
+            stderr = self._virtual_display.stderr
+            raise XvfbExitedError("Xvfb exited with exit code {0} stdout={1!r} stderr={2!r}".format(
+                ret, stdout, stderr))
 
     def stop(self):
         self._virtual_display.stop()
