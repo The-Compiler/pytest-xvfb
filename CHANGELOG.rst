@@ -5,6 +5,7 @@ v1.1.0 (unreleased)
 -------------------
 
 - The ``xvfb_args`` option is now a single line parsed with ``shlex.split``.
+- The ``XvfbExitedError`` exception now includes stdout and stderr.
 
 v1.0.0
 ------
