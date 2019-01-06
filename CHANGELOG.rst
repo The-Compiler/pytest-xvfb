@@ -1,6 +1,12 @@
 pytest-xvfb changelog
 =====================
 
+v1.2.0
+------
+
+- ``Item.get_closest_marker`` is now used, which restores compatibility with
+  pytest 4.1.0 and requires pytest 3.6.0 or newer.
+
 v1.1.0
 ------
 
