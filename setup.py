@@ -13,7 +13,7 @@ def read(fname):
 
 setup(
     name='pytest-xvfb',
-    version='1.1.0',
+    version='1.2.0',
     author='Florian Bruhin',
     author_email='me@the-compiler.org',
     maintainer='Florian Bruhin',
