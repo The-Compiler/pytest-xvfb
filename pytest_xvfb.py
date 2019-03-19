@@ -15,6 +15,13 @@ import pyvirtualdisplay
 import pytest
 
 
+def is_xdist_master(config):
+    return (
+        config.getoption("dist", "no") != "no" and
+        not os.environ.get("PYTEST_XDIST_WORKER")
+    )
+
+
 def xvfb_available():
     # http://stackoverflow.com/a/28909933/2085149
     return any(
@@ -81,11 +88,12 @@ def pytest_addoption(parser):
 
 
 def pytest_configure(config):
-    if config.getoption('--no-xvfb') or not xvfb_available():
+    no_xvfb = config.getoption('--no-xvfb') or is_xdist_master(config)
+    if no_xvfb or not xvfb_available():
         config.xvfb = None
         if (sys.platform.startswith('linux')
                 and 'DISPLAY' in os.environ
-                and not config.getoption('--no-xvfb')):
+                and not no_xvfb):
             print('pytest-xvfb could not find Xvfb. '
                   'You can install it to prevent windows from being shown.')
     else:
