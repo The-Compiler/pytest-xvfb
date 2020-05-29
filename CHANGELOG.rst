@@ -1,6 +1,12 @@
 pytest-xvfb changelog
 =====================
 
+v2.0.0
+------
+
+- Support for Python 2.7, 3.3 and 3.4 is now dropped.
+- Support for Python 3.6, 3.7 and 3.8 was added (no code changes required).
+
 v1.2.0
 ------
 
