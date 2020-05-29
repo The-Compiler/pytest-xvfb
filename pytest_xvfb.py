@@ -58,7 +58,8 @@ class Xvfb(object):
                 '\n    '.join(stderr.splitlines())))
 
     def stop(self):
-        self._virtual_display.stop()
+        if self.display is not None:  # starting worked
+            self._virtual_display.stop()
 
 
 def pytest_addoption(parser):
