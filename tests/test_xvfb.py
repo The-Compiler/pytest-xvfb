@@ -122,10 +122,7 @@ def test_failing_start(testdir, monkeypatch):
     """)
     result = testdir.runpytest()
     result.stderr.fnmatch_lines([
-        "INTERNALERROR> *XvfbExitedError: Xvfb exited with exit code 1",
-        "INTERNALERROR> Xvfb stdout:",
-        "INTERNALERROR> Xvfb stderr:",
-        "INTERNALERROR>     Unrecognized option: -foo",
+        "INTERNALERROR> *.XStartError: Xvfb program closed. *",
     ])
     assert 'OSError' not in str(result.stderr)
 

@@ -46,16 +46,7 @@ class Xvfb(object):
             extra_args=self.args)
         self._virtual_display.start()
         self.display = self._virtual_display.display
-
-        if not self._virtual_display.is_alive():
-            ret = self._virtual_display.return_code
-            self._virtual_display.wait()  # collect outputs
-            stdout = self._virtual_display.stdout
-            stderr = self._virtual_display.stderr
-            raise XvfbExitedError("Xvfb exited with exit code {0}\nXvfb stdout:\n    {1}\nXvfb stderr:\n    {2}".format(
-                ret,
-                '\n    '.join(stdout.splitlines()),
-                '\n    '.join(stderr.splitlines())))
+        assert self._virtual_display.is_alive()
 
     def stop(self):
         if self.display is not None:  # starting worked
