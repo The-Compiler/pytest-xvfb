@@ -23,7 +23,7 @@ setup(
     description='A pytest plugin to run Xvfb for tests.',
     long_description=read('README.rst'),
     py_modules=['pytest_xvfb'],
-    install_requires=['pytest>=2.8.1', 'pyvirtualdisplay>=0.2.1'],
+    install_requires=['pytest>=2.8.1', 'pyvirtualdisplay>=1.3'],
     python_requires='>=3.5',
     classifiers=[
         'Development Status :: 4 - Beta',

@@ -42,8 +42,8 @@ class Xvfb(object):
     def start(self):
         self._virtual_display = pyvirtualdisplay.Display(
             backend='xvfb', size=(self.width, self.height),
-            color_depth=self.colordepth, use_xauth=self.xauth)
-        self._virtual_display.cmd.extend(self.args)
+            color_depth=self.colordepth, use_xauth=self.xauth,
+            extra_args=self.args)
         self._virtual_display.start()
         self.display = self._virtual_display.display
 
