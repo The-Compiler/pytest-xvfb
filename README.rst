@@ -1,14 +1,6 @@
 pytest-xvfb
 ===================================
 
-.. image:: https://travis-ci.org/The-Compiler/pytest-xvfb.svg?branch=master
-    :target: https://travis-ci.org/The-Compiler/pytest-xvfb
-    :alt: See Build Status on Travis CI
-
-.. image:: https://ci.appveyor.com/api/projects/status/github/The-Compiler/pytest-xvfb?branch=master
-    :target: https://ci.appveyor.com/project/The-Compiler/pytest-xvfb/branch/master
-    :alt: See Build Status on AppVeyor
-
 A pytest plugin to run Xvfb for tests.
 
 ----
