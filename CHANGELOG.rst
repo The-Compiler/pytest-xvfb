@@ -8,6 +8,7 @@ v2.0.0
   was dropped.
 - Support for Python 2.7, 3.3 and 3.4 is now dropped.
 - Support for Python 3.6, 3.7 and 3.8 was added (no code changes required).
+- Xvfb is now not started anymore in the xdist master process.
 
 v1.2.0
 ------
