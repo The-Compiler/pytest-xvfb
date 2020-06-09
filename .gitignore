@@ -7,3 +7,5 @@
 /coverage.xml
 /.coverage
 *.pyc
+.mypy_cache
+/.venv
