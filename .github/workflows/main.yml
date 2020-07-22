@@ -7,15 +7,10 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        python-version: [3.5, 3.6, 3.7, 3.8, pypy3, 3.9-dev, 3.10-dev]
+        python-version: [3.5, 3.6, 3.7, 3.8, pypy3, 3.9-dev]
     steps:
       - uses: actions/checkout@v2
       - uses: actions/setup-python@v2
-        if: "!endsWith(matrix.python-version, '-dev')"
-        with:
-          python-version: ${{ matrix.python-version }}
-      - uses: deadsnakes/action@v1.0.0
-        if: "endsWith(matrix.python-version, '-dev')"
         with:
           python-version: ${{ matrix.python-version }}
       - run: pip install tox
