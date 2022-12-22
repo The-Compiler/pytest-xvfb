@@ -1,13 +1,7 @@
 # -*- coding: utf-8 -*-
 
 import os
-import re
-import time
 import os.path
-import fnmatch
-import hashlib
-import tempfile
-import subprocess
 import sys
 
 import pyvirtualdisplay
@@ -37,19 +31,22 @@ class XvfbExitedError(Exception):
 
 class Xvfb(object):
 
-    def __init__(self, config):
+    def __init__(self, config, backend):
         self.width = int(config.getini('xvfb_width'))
         self.height = int(config.getini('xvfb_height'))
         self.colordepth = int(config.getini('xvfb_colordepth'))
         self.args = config.getini('xvfb_args') or []
         self.xauth = config.getini('xvfb_xauth')
+        self.backend = backend
         self.display = None
         self._virtual_display = None
 
     def start(self):
         self._virtual_display = pyvirtualdisplay.Display(
-            backend='xvfb', size=(self.width, self.height),
-            color_depth=self.colordepth, use_xauth=self.xauth,
+            backend=self.backend,
+            size=(self.width, self.height),
+            color_depth=self.colordepth,
+            use_xauth=self.xauth,
             extra_args=self.args)
         self._virtual_display.start()
         self.display = self._virtual_display.display
@@ -67,6 +64,11 @@ def pytest_addoption(parser):
         action='store_true',
         help='Disable Xvfb for tests.'
     )
+    group.addoption(
+        '--use-xephyr',
+        action='store_true',
+        help='Enable Xephyr for tests. Will not work if --no-xvfb'
+    )
 
     parser.addini('xvfb_width', 'Width of the Xvfb display', default='800')
     parser.addini('xvfb_height', 'Height of the Xvfb display', default='600')
@@ -81,6 +83,7 @@ def pytest_addoption(parser):
 
 def pytest_configure(config):
     no_xvfb = config.getoption('--no-xvfb') or is_xdist_master(config)
+    use_xephyr = config.getoption('--use-xephyr')
     if no_xvfb or not xvfb_available():
         config.xvfb = None
         if (sys.platform.startswith('linux')
@@ -89,7 +92,10 @@ def pytest_configure(config):
             print('pytest-xvfb could not find Xvfb. '
                   'You can install it to prevent windows from being shown.')
     else:
-        config.xvfb = Xvfb(config)
+        if use_xephyr:
+            config.xvfb = Xvfb(config, backend='xephyr')
+        else:
+            config.xvfb = Xvfb(config, backend='xvfb')
         config.xvfb.start()
     config.addinivalue_line("markers", "no_xvfb: Skip test when using Xvfb")
 
