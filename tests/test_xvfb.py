@@ -1,11 +1,8 @@
-# -*- coding: utf-8 -*-
-
 import os
 
 import pytest
 
 import pytest_xvfb
-
 
 xauth_available = any(
     os.access(os.path.join(path, "xauth"), os.X_OK)
@@ -83,7 +80,7 @@ def test_no_xvfb_arg(testdir, monkeypatch):
 @pytest.mark.parametrize("configured", [True, False])
 def test_screen_size(testdir, configured):
     try:
-        import tkinter
+        import tkinter  # noqa
     except ImportError:
         pytest.importorskip("Tkinter")
 
@@ -167,7 +164,7 @@ def test_no_xvfb_marker(testdir, args, outcome):
     """
     )
     res = testdir.runpytest(*args)
-    res.stdout.fnmatch_lines("*= {0}*".format(outcome))
+    res.stdout.fnmatch_lines(f"*= {outcome}*")
 
 
 def test_xvfb_fixture(testdir):

@@ -1,20 +1,10 @@
-# -*- coding: utf-8 -*-
-
-import os
-import re
-import time
 import atexit
+import os
 import os.path
-import fnmatch
-import hashlib
-import tempfile
-import subprocess
 import sys
 
-import pyvirtualdisplay
-
 import pytest
-
+import pyvirtualdisplay
 
 xvfb_instance = None
 
@@ -47,7 +37,7 @@ class XvfbExitedError(Exception):
     pass
 
 
-class Xvfb(object):
+class Xvfb:
     def __init__(self, config):
         self.width = int(config.getini("xvfb_width"))
         self.height = int(config.getini("xvfb_height"))

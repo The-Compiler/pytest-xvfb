@@ -1,5 +1,3 @@
-# -*- coding: utf-8 -*-
-
 """Make sure things don't break on Windows with no Xvfb available."""
 
 
