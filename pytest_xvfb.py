@@ -3,6 +3,7 @@
 import os
 import re
 import time
+import atexit
 import os.path
 import fnmatch
 import hashlib
@@ -13,6 +14,18 @@ import sys
 import pyvirtualdisplay
 
 import pytest
+
+
+xvfb_instance = None
+
+
+def shutdown_xvfb():
+    if xvfb_instance is not None:
+        xvfb_instance.stop()
+
+# This needs to be done as early as possible (before importing QtWebEngine for
+# example), so that Xvfb gets shut down as late as possible.
+atexit.register(shutdown_xvfb)
 
 
 def is_xdist_master(config):
@@ -80,33 +93,29 @@ def pytest_addoption(parser):
 
 
 def pytest_configure(config):
+    global xvfb_instance
+
     no_xvfb = config.getoption('--no-xvfb') or is_xdist_master(config)
     if no_xvfb or not xvfb_available():
-        config.xvfb = None
         if (sys.platform.startswith('linux')
                 and 'DISPLAY' in os.environ
                 and not no_xvfb):
             print('pytest-xvfb could not find Xvfb. '
                   'You can install it to prevent windows from being shown.')
     else:
-        config.xvfb = Xvfb(config)
-        config.xvfb.start()
+        xvfb_instance = Xvfb(config)
+        xvfb_instance.start()
     config.addinivalue_line("markers", "no_xvfb: Skip test when using Xvfb")
-
-
-def pytest_unconfigure(config):
-    if getattr(config, 'xvfb', None) is not None:
-        config.xvfb.stop()
 
 
 def pytest_collection_modifyitems(items):
     for item in items:
-        if item.get_closest_marker('no_xvfb') and item.config.xvfb is not None:
+        if item.get_closest_marker('no_xvfb') and xvfb_instance is not None:
             skipif_marker = pytest.mark.skipif(
                 True, reason="Skipped with Xvfb")
             item.add_marker(skipif_marker)
 
 
 @pytest.fixture(scope='session')
-def xvfb(pytestconfig):
-    return pytestconfig.xvfb
+def xvfb():
+    return xvfb_instance
