@@ -4,8 +4,8 @@ pytest-xvfb changelog
 v3.0.0 (unreleased)
 -------------------
 
-- Support for Python 3.5 and 3.6 is now dropped, while official support for 3.9
-  and 3.10 was added (with no code chances required).
+- Support for Python 3.5 and 3.6 is now dropped, while official support for 3.9,
+  3.10 and 3.11 was added (with no code chances required).
 - The ``Xvfb`` instance (which is not considered public API) is now no longer
   saved in pytest's ``config`` object anymore.
 - Xvfb is now shut down as late as possible (via an ``atexit`` hook registered
