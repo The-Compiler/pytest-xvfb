@@ -4,9 +4,11 @@
 
 
 def test_xvfb_windows(testdir):
-    testdir.makepyfile("""
+    testdir.makepyfile(
+        """
         def test_nothing():
             pass
-    """)
+    """
+    )
     result = testdir.runpytest()
     assert result.ret == 0
