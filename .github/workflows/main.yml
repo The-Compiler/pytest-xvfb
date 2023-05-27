@@ -26,9 +26,17 @@ jobs:
       - run: pip install tox
       - run: tox -e py -- tests/test_xvfb_windows.py
 
+  format:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - uses: actions/setup-python@v2
+      - run: pip install tox
+      - run: tox -e format
+
   deploy:
     runs-on: ubuntu-latest
-    needs: [tests, windows]
+    needs: [tests, windows, format]
     steps:
     - uses: actions/checkout@v2
     - uses: actions/setup-python@v1

@@ -11,6 +11,7 @@ v3.0.0 (unreleased)
 - Xvfb is now shut down as late as possible (via an ``atexit`` hook registered
   at import time), seemingly avoiding errors such as
   "XIO: fatal IO error 0 (Success)".
+- Code reformatting using black/shed.
 
 v2.0.0
 ------
