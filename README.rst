@@ -18,12 +18,14 @@ Usage
 
 With Xvfb and the plugin installed, your testsuite automatically runs with `Xvfb`_. This allows tests to be run without windows popping up during GUI tests or on systems without a display (like a CI).
 
-If Xvfb is not installed, the plugin does not run and your tests will still work as normal. However,
-a warning message will print to standard output letting you know that Xvfb is not installed.
+The plugin sees Xvfb being installed as "optional", since the tests can still
+run without it installed. If it's unavailable, it will show an informational
+message, if on Linux and a ``DISPLAY`` is available. When using
+``--xvfb-backend xvfb``, this message will turn into a hard error instead.
 
-If you're currently using ``xvfb-run`` in something like ``.travis.yml``,
-simply remove it and install this plugin instead - then you'll also have the
-benefits of Xvfb locally.
+If you're currently using ``xvfb-run`` in something like a GitHub Actions YAML
+file simply remove the wrapper and install this plugin instead - then you'll
+also have the benefits of Xvfb locally.
 
 Features
 --------
@@ -34,10 +36,8 @@ inspect a failure).
 With ``--xvfb-backend xephyr`` or ``--xvfb-backend xvnc``, you can use Xephyr
 or Xvnc in place of Xvfb, e.g. to visually inspect failures.
 
-The plugin sees Xvfb being installed as "optional", since the tests can still
-run without it installed. If it's unavailable, it will show an informational
-message, if on Linux and a ``DISPLAY`` is available. When using
-``--xvfb-backend xvfb``, this message will turn into a hard error instead.
+**NOTE:** Support for ``xvnc`` is currently experimental and not tested on CI,
+due to incompatibilities with PyVirtualDisplay and Ubuntu 20.04's tightvncserver.
 
 You can mark tests with ``@pytest.mark.no_xvfb`` to skip them when they're
 running with Xvfb.
