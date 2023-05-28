@@ -261,6 +261,8 @@ def test_early_display(monkeypatch, testdir, backend_args):
             pass
     """
     )
+    result = testdir.runpytest(*backend_args)
+    assert result.ret == 0
 
 
 def test_strict_markers(testdir):
