@@ -31,6 +31,14 @@ Features
 You can pass ``--no-xvfb`` to explicitly turn off Xvfb (e.g. to visually
 inspect a failure).
 
+With ``--xvfb-backend xephyr`` or ``--xvfb-backend xvnc``, you can use Xephyr
+or Xvnc in place of Xvfb, e.g. to visually inspect failures.
+
+The plugin sees Xvfb being installed as "optional", since the tests can still
+run without it installed. If it's unavailable, it will show an informational
+message, if on Linux and a ``DISPLAY`` is available. When using
+``--xvfb-backend xvfb``, this message will turn into a hard error instead.
+
 You can mark tests with ``@pytest.mark.no_xvfb`` to skip them when they're
 running with Xvfb.
 
@@ -41,6 +49,7 @@ A ``xvfb`` fixture is available with the following attributes:
 - ``colordepth``: The configured colordepth of the screen.
 - ``args``: The arguments to be passed to Xvfb.
 - ``display``: The display number (as int) which is used.
+- ``backend``: Either ``None`` (Xvfb), ``"xvfb"``, ``"xephyr"``, or ``"xvnc"``.
 
 Contributing
 ------------

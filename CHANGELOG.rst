@@ -4,6 +4,9 @@ pytest-xvfb changelog
 v3.0.0 (unreleased)
 -------------------
 
+- New ``--xvfb-backend`` argument, which can be used to run Xephyr or Xvnc in
+  place of Xvfb (e.g. for visual inspection but on a remote system or a
+  consistent screen size needed).
 - Support for Python 3.5 and 3.6 is now dropped, while official support for 3.9,
   3.10 and 3.11 was added (with no code chances required).
 - The ``Xvfb`` instance is now no longer saved in pytest's ``config`` object as

@@ -25,10 +25,10 @@ def is_xdist_master(config):
     )
 
 
-def xvfb_available():
+def has_executable(name):
     # http://stackoverflow.com/a/28909933/2085149
     return any(
-        os.access(os.path.join(path, "Xvfb"), os.X_OK)
+        os.access(os.path.join(path, name), os.X_OK)
         for path in os.environ["PATH"].split(os.pathsep)
     )
 
@@ -44,12 +44,13 @@ class Xvfb:
         self.colordepth = int(config.getini("xvfb_colordepth"))
         self.args = config.getini("xvfb_args") or []
         self.xauth = config.getini("xvfb_xauth")
+        self.backend = config.getoption("--xvfb-backend")
         self.display = None
         self._virtual_display = None
 
     def start(self):
         self._virtual_display = pyvirtualdisplay.Display(
-            backend="xvfb",
+            backend=self.backend,
             size=(self.width, self.height),
             color_depth=self.colordepth,
             use_xauth=self.xauth,
@@ -67,6 +68,12 @@ class Xvfb:
 def pytest_addoption(parser):
     group = parser.getgroup("xvfb")
     group.addoption("--no-xvfb", action="store_true", help="Disable Xvfb for tests.")
+    group.addoption(
+        "--xvfb-backend",
+        action="store",
+        choices=["xvfb", "xvnc", "xephyr"],
+        help="Use Xephyr or Xvnc instead of Xvfb for tests. Will be ignored if --no-xvfb is given.",
+    )
 
     parser.addini("xvfb_width", "Width of the Xvfb display", default="800")
     parser.addini("xvfb_height", "Height of the Xvfb display", default="600")
@@ -84,15 +91,27 @@ def pytest_configure(config):
     global xvfb_instance
 
     no_xvfb = config.getoption("--no-xvfb") or is_xdist_master(config)
-    if no_xvfb or not xvfb_available():
-        if sys.platform.startswith("linux") and "DISPLAY" in os.environ and not no_xvfb:
+    backend = config.getoption("--xvfb-backend")
+
+    if no_xvfb:
+        pass
+    elif backend == None and not has_executable("Xvfb"):
+        # soft fail
+        if sys.platform.startswith("linux") and "DISPLAY" in os.environ:
             print(
                 "pytest-xvfb could not find Xvfb. "
                 "You can install it to prevent windows from being shown."
             )
+    elif (
+        backend == "xvfb" and not has_executable("Xvfb")
+        or backend == "xvnc" and not has_executable("Xvnc")
+        or backend == "xephyr" and not has_executable("Xephyr")
+    ):
+        raise pytest.UsageError(f"xvfb backend {backend} requested but not installed.")
     else:
         xvfb_instance = Xvfb(config)
         xvfb_instance.start()
+
     config.addinivalue_line("markers", "no_xvfb: Skip test when using Xvfb")
 
 
