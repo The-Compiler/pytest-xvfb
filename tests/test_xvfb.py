@@ -1,8 +1,8 @@
 import os
 
 import pytest
-
 import pyvirtualdisplay
+
 import pytest_xvfb
 
 xauth_available = any(
@@ -16,25 +16,32 @@ def ensure_xvfb():
     if not pytest_xvfb.has_executable("Xvfb"):
         raise Exception("Tests need Xvfb to run.")
 
-needs_xephyr = pytest.mark.skipif(not pytest_xvfb.has_executable("Xephyr"), reason="Needs Xephyr")
-needs_xvnc = pytest.mark.skipif(not pytest_xvfb.has_executable("Xvnc"), reason="Needs Xvnc")
+
+needs_xephyr = pytest.mark.skipif(
+    not pytest_xvfb.has_executable("Xephyr"), reason="Needs Xephyr"
+)
+needs_xvnc = pytest.mark.skipif(
+    not pytest_xvfb.has_executable("Xvnc"), reason="Needs Xvnc"
+)
 
 
-@pytest.fixture(params=[
-    None,
-    "xvfb",
-    pytest.param("xephyr", marks=needs_xephyr),
-    pytest.param("xvnc", marks=needs_xvnc),
-])
+@pytest.fixture(
+    params=[
+        None,
+        "xvfb",
+        pytest.param("xephyr", marks=needs_xephyr),
+        pytest.param("xvnc", marks=needs_xvnc),
+    ]
+)
 def backend_args(request, monkeypatch):
     monkeypatch.delenv("DISPLAY")
-    args = [] if request.param == None else ["--xvfb-backend", request.param]
+    args = [] if request.param is None else ["--xvfb-backend", request.param]
     if request.param == "xephyr":
         # we need a host display for it... PyVirtualDisplay and Xvfb to the
         # rescue!
         display = pyvirtualdisplay.Display()
         display.start()
-        yield  args
+        yield args
         display.stop()
     else:
         yield args

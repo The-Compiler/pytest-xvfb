@@ -95,7 +95,7 @@ def pytest_configure(config):
 
     if no_xvfb:
         pass
-    elif backend == None and not has_executable("Xvfb"):
+    elif backend is None and not has_executable("Xvfb"):
         # soft fail
         if sys.platform.startswith("linux") and "DISPLAY" in os.environ:
             print(
@@ -103,9 +103,12 @@ def pytest_configure(config):
                 "You can install it to prevent windows from being shown."
             )
     elif (
-        backend == "xvfb" and not has_executable("Xvfb")
-        or backend == "xvnc" and not has_executable("Xvnc")
-        or backend == "xephyr" and not has_executable("Xephyr")
+        backend == "xvfb"
+        and not has_executable("Xvfb")
+        or backend == "xvnc"
+        and not has_executable("Xvnc")
+        or backend == "xephyr"
+        and not has_executable("Xephyr")
     ):
         raise pytest.UsageError(f"xvfb backend {backend} requested but not installed.")
     else:
