@@ -1,8 +1,15 @@
+import os
+import sys
+
 import pytest
 
 pytest.importorskip("PyQt5.QtWebEngineWidgets")
 
 
+@pytest.mark.skipif(
+    sys.version_info == (3, 12, 0, "beta", 1) and "CI" in os.environ,
+    reason="Segfaults on GHA for unknown reasons",
+)
 def test_qt_output(pytester):
     pytester.makepyfile(
         """
