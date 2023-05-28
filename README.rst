@@ -37,7 +37,7 @@ With ``--xvfb-backend xephyr`` or ``--xvfb-backend xvnc``, you can use Xephyr
 or Xvnc in place of Xvfb, e.g. to visually inspect failures.
 
 **NOTE:** Support for ``xvnc`` is currently experimental and not tested on CI,
-due to incompatibilities with PyVirtualDisplay and Ubuntu 20.04's tightvncserver.
+due to incompatibilities with PyVirtualDisplay and Ubuntu 22.04's tightvncserver.
 
 You can mark tests with ``@pytest.mark.no_xvfb`` to skip them when they're
 running with Xvfb.
