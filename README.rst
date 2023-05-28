@@ -51,6 +51,10 @@ A ``xvfb`` fixture is available with the following attributes:
 - ``display``: The display number (as int) which is used.
 - ``backend``: Either ``None`` (Xvfb), ``"xvfb"``, ``"xephyr"``, or ``"xvnc"``.
 
+In a pytest.ini, ``xvfb_width``, ``xvfb_height``, ``xvfb_colordepth`` and
+``xvfb_args`` can be used to configure the respective values. In addition,
+``xvfb_xauth`` can be set to ``true`` to generate an ``Xauthority`` token.
+
 Contributing
 ------------
 
