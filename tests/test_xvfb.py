@@ -47,8 +47,8 @@ def backend_args(request, monkeypatch):
         yield args
 
 
-def test_xvfb_available(testdir, backend_args):
-    testdir.makepyfile(
+def test_xvfb_available(pytester, backend_args):
+    pytester.makepyfile(
         """
         import os
 
@@ -56,16 +56,16 @@ def test_xvfb_available(testdir, backend_args):
             assert 'DISPLAY' in os.environ
     """
     )
-    result = testdir.runpytest(*backend_args)
+    result = pytester.runpytest(*backend_args)
     assert result.ret == 0
 
 
-def test_empty_display(testdir, monkeypatch, backend_args):
+def test_empty_display(pytester, monkeypatch, backend_args):
     if backend_args == ["--xvfb-backend", "xephyr"]:
         pytest.skip("Xephyr needs a host display")
 
     monkeypatch.setenv("DISPLAY", "")
-    testdir.makepyfile(
+    pytester.makepyfile(
         """
         import os
 
@@ -73,15 +73,15 @@ def test_empty_display(testdir, monkeypatch, backend_args):
             assert 'DISPLAY' in os.environ
     """
     )
-    result = testdir.runpytest(*backend_args)
+    result = pytester.runpytest(*backend_args)
     assert os.environ["DISPLAY"] == ""
     assert result.ret == 0
 
 
-def test_xvfb_unavailable(testdir, monkeypatch):
+def test_xvfb_unavailable(pytester, monkeypatch):
     monkeypatch.setenv("PATH", "")
     monkeypatch.setenv("DISPLAY", ":42")
-    testdir.makepyfile(
+    pytester.makepyfile(
         """
         import os
 
@@ -90,19 +90,19 @@ def test_xvfb_unavailable(testdir, monkeypatch):
     """
     )
     assert os.environ["DISPLAY"] == ":42"
-    result = testdir.runpytest()
+    result = pytester.runpytest()
     result.stdout.fnmatch_lines("* could not find Xvfb.*")
     assert result.ret == 0
 
 
-def test_xvfb_unavailable_explicit(testdir, monkeypatch, backend_args):
+def test_xvfb_unavailable_explicit(pytester, monkeypatch, backend_args):
     """If an explicitly chosen backend is unavailable: Hard error."""
     if not backend_args:
         pytest.skip("Already tested above")
 
     monkeypatch.setenv("PATH", "")
     monkeypatch.setenv("DISPLAY", ":42")
-    testdir.makepyfile(
+    pytester.makepyfile(
         """
         import os
 
@@ -111,14 +111,14 @@ def test_xvfb_unavailable_explicit(testdir, monkeypatch, backend_args):
     """
     )
     assert os.environ["DISPLAY"] == ":42"
-    result = testdir.runpytest(*backend_args)
+    result = pytester.runpytest(*backend_args)
     result.stderr.fnmatch_lines("*xvfb backend * requested but not installed.")
     assert result.ret == pytest.ExitCode.USAGE_ERROR
 
 
-def test_no_xvfb_arg(testdir, monkeypatch, backend_args):
+def test_no_xvfb_arg(pytester, monkeypatch, backend_args):
     monkeypatch.setenv("DISPLAY", ":42")
-    testdir.makepyfile(
+    pytester.makepyfile(
         """
         import os
 
@@ -127,12 +127,12 @@ def test_no_xvfb_arg(testdir, monkeypatch, backend_args):
     """
     )
     assert os.environ["DISPLAY"] == ":42"
-    result = testdir.runpytest("--no-xvfb", *backend_args)
+    result = pytester.runpytest("--no-xvfb", *backend_args)
     assert result.ret == 0
 
 
 @pytest.mark.parametrize("configured", [True, False])
-def test_screen_size(testdir, configured, backend_args):
+def test_screen_size(pytester, configured, backend_args):
     if backend_args == ["--xvfb-backend", "xvnc"]:
         pytest.skip("Seems to be unsupported with Xvnc")
 
@@ -142,7 +142,7 @@ def test_screen_size(testdir, configured, backend_args):
         pytest.importorskip("Tkinter")
 
     if configured:
-        testdir.makeini(
+        pytester.makeini(
             """
             [pytest]
             xvfb_width = 1024
@@ -158,7 +158,7 @@ def test_screen_size(testdir, configured, backend_args):
         expected_height = 600
         expected_depth = 16
 
-    testdir.makepyfile(
+    pytester.makepyfile(
         """
         try:
             import tkinter as tk
@@ -174,24 +174,24 @@ def test_screen_size(testdir, configured, backend_args):
             width=expected_width, height=expected_height, depth=expected_depth
         )
     )
-    result = testdir.runpytest(*backend_args)
+    result = pytester.runpytest(*backend_args)
     assert result.ret == 0
 
 
-def test_failing_start(testdir, monkeypatch, backend_args):
-    testdir.makeini(
+def test_failing_start(pytester, monkeypatch, backend_args):
+    pytester.makeini(
         """
         [pytest]
         xvfb_args = -foo
     """
     )
-    testdir.makepyfile(
+    pytester.makepyfile(
         """
         def test_none():
             pass
     """
     )
-    result = testdir.runpytest(*backend_args)
+    result = pytester.runpytest(*backend_args)
     result.stderr.fnmatch_lines(
         [
             "INTERNALERROR> *.XStartError: X* program closed. *",
@@ -207,8 +207,8 @@ def test_failing_start(testdir, monkeypatch, backend_args):
         (["--no-xvfb"], "2 passed"),
     ],
 )
-def test_no_xvfb_marker(testdir, args, outcome, backend_args):
-    testdir.makepyfile(
+def test_no_xvfb_marker(pytester, args, outcome, backend_args):
+    pytester.makepyfile(
         """
         import pytest
 
@@ -220,12 +220,12 @@ def test_no_xvfb_marker(testdir, args, outcome, backend_args):
             pass
     """
     )
-    res = testdir.runpytest(*args, *backend_args)
+    res = pytester.runpytest(*args, *backend_args)
     res.stdout.fnmatch_lines(f"*= {outcome}*")
 
 
-def test_xvfb_fixture(testdir, backend_args):
-    testdir.makepyfile(
+def test_xvfb_fixture(pytester, backend_args):
+    pytester.makepyfile(
         """
         import os
 
@@ -241,13 +241,13 @@ def test_xvfb_fixture(testdir, backend_args):
             assert xvfb.args == []
     """
     )
-    result = testdir.runpytest(*backend_args)
+    result = pytester.runpytest(*backend_args)
     assert result.ret == 0
 
 
-def test_early_display(monkeypatch, testdir, backend_args):
+def test_early_display(monkeypatch, pytester, backend_args):
     """Make sure DISPLAY is set in a session-scoped fixture already."""
-    testdir.makepyfile(
+    pytester.makepyfile(
         """
         import os
         import pytest
@@ -261,12 +261,12 @@ def test_early_display(monkeypatch, testdir, backend_args):
             pass
     """
     )
-    result = testdir.runpytest(*backend_args)
+    result = pytester.runpytest(*backend_args)
     assert result.ret == 0
 
 
-def test_strict_markers(testdir):
-    testdir.makepyfile(
+def test_strict_markers(pytester):
+    pytester.makepyfile(
         """
         import pytest
 
@@ -275,13 +275,13 @@ def test_strict_markers(testdir):
             pass
     """
     )
-    result = testdir.runpytest("--strict")
+    result = pytester.runpytest("--strict")
     assert result.ret == 0
 
 
-def test_xvfb_session_fixture(testdir):
+def test_xvfb_session_fixture(pytester):
     """Make sure the xvfb fixture can be used from a session-wide one."""
-    testdir.makepyfile(
+    pytester.makepyfile(
         """
         import pytest
 
@@ -293,20 +293,20 @@ def test_xvfb_session_fixture(testdir):
             pass
     """
     )
-    result = testdir.runpytest()
+    result = pytester.runpytest()
     assert result.ret == 0
 
 
 @pytest.mark.skipif(not xauth_available, reason="no xauth")
-def test_xvfb_with_xauth(testdir, backend_args):
+def test_xvfb_with_xauth(pytester, backend_args):
     original_auth = os.environ.get("XAUTHORITY")
-    testdir.makeini(
+    pytester.makeini(
         """
         [pytest]
         xvfb_xauth = True
     """
     )
-    testdir.makepyfile(
+    pytester.makepyfile(
         """
         import os
 
@@ -316,7 +316,7 @@ def test_xvfb_with_xauth(testdir, backend_args):
             assert os.access(os.environ['XAUTHORITY'], os.R_OK)
     """
     )
-    result = testdir.runpytest("-s", *backend_args)
+    result = pytester.runpytest("-s", *backend_args)
     # Get and parse the XAUTHORITY: line
     authline = next(l for l in result.outlines if l.startswith("XAUTHORITY:"))
     authfile = authline.split(" ", 1)[1]
