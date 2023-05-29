@@ -5,13 +5,16 @@ import sys
 
 import pytest
 
+
+if sys.version_info == (3, 12, 0, "beta", 1) and "CI" in os.environ:
+    pytest.skip(
+        reason="Segfaults on GHA for unknown reasons",
+        allow_module_level=True,
+    )
+
 pytest.importorskip("PyQt5.QtWebEngineWidgets")
 
 
-@pytest.mark.skipif(
-    sys.version_info == (3, 12, 0, "beta", 1) and "CI" in os.environ,
-    reason="Segfaults on GHA for unknown reasons",
-)
 def test_qt_output(pytester: pytest.Pytester) -> None:
     pytester.makepyfile(
         """
