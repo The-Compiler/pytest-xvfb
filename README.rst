@@ -1,7 +1,7 @@
 pytest-xvfb
 ===================================
 
-A pytest plugin to run Xvfb for tests.
+A pytest plugin to run `Xvfb`_ (or `Xephyr`_/`Xvnc`_) for tests.
 
 ----
 
@@ -93,3 +93,6 @@ If you encounter any problems, please `file an issue`_ along with a detailed des
 .. _`tox`: https://tox.readthedocs.org/en/latest/
 .. _`pip`: https://pypi.python.org/pypi/pip/
 .. _`PyPI`: https://pypi.python.org/pypi
+.. _`Xvfb`: https://en.wikipedia.org/wiki/Xvfb
+.. _`Xephyr`: https://www.freedesktop.org/wiki/Software/Xephyr/
+.. _`Xvnc`: https://tigervnc.org/doc/Xvnc.html

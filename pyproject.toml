@@ -8,7 +8,7 @@ version = "2.0.0"
 authors = [{name = "Florian Bruhin", email = "me@the-compiler.org"}]
 maintainers = [{name = "Florian Bruhin", email = "me@the-compiler.org"}]
 license = {text = "MIT"}
-description = "A pytest plugin to run Xvfb for tests."
+description = "A pytest plugin to run Xvfb (or Xephyr/Xvnc) for tests."
 readme = "README.rst"
 classifiers = [
     "Development Status :: 4 - Beta",

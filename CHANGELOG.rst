@@ -15,6 +15,7 @@ v3.0.0 (unreleased)
   at import time), seemingly avoiding errors such as
   "XIO: fatal IO error 0 (Success)".
 - Code reformatting using black/shed.
+- Packaging refresh using ``pyproject.toml``.
 
 v2.0.0
 ------
