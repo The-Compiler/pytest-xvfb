@@ -13,7 +13,7 @@ jobs:
         ubuntu-version: [ubuntu-latest, ubuntu-20.04]
     runs-on: ${{ matrix.ubuntu-version }}
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v3
       - uses: actions/setup-python@v2
         with:
           python-version: ${{ matrix.python-version }}
@@ -26,7 +26,7 @@ jobs:
   windows:
     runs-on: windows-latest
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v3
       - uses: actions/setup-python@v2
         with:
           python-version: '3.x'
@@ -39,7 +39,7 @@ jobs:
       matrix:
         env: [format, mypy]
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v3
       - uses: actions/setup-python@v2
       - run: pip install tox
       - run: tox -e ${{ matrix.env }}
@@ -48,7 +48,7 @@ jobs:
     runs-on: ubuntu-latest
     needs: [tests, windows, lint]
     steps:
-    - uses: actions/checkout@v2
+    - uses: actions/checkout@v3
     - uses: actions/setup-python@v1
       with:
         python-version: '3.x'
