@@ -1,8 +1,8 @@
 pytest-xvfb changelog
 =====================
 
-v3.0.0 (unreleased)
--------------------
+v3.0.0
+------
 
 - New ``--xvfb-backend`` argument, which can be used to run Xephyr or Xvnc in
   place of Xvfb (e.g. for visual inspection but on a remote system or a
