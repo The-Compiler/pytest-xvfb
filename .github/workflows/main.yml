@@ -14,7 +14,7 @@ jobs:
     runs-on: ${{ matrix.ubuntu-version }}
     steps:
       - uses: actions/checkout@v3
-      - uses: actions/setup-python@v2
+      - uses: actions/setup-python@v4
         with:
           python-version: ${{ matrix.python-version }}
       - run: |
@@ -27,7 +27,7 @@ jobs:
     runs-on: windows-latest
     steps:
       - uses: actions/checkout@v3
-      - uses: actions/setup-python@v2
+      - uses: actions/setup-python@v4
         with:
           python-version: '3.x'
       - run: pip install tox
@@ -40,7 +40,7 @@ jobs:
         env: [format, mypy]
     steps:
       - uses: actions/checkout@v3
-      - uses: actions/setup-python@v2
+      - uses: actions/setup-python@v4
       - run: pip install tox
       - run: tox -e ${{ matrix.env }}
 
@@ -49,7 +49,7 @@ jobs:
     needs: [tests, windows, lint]
     steps:
     - uses: actions/checkout@v3
-    - uses: actions/setup-python@v1
+    - uses: actions/setup-python@v4
       with:
         python-version: '3.x'
     - name: Build package
