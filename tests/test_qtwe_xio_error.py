@@ -5,7 +5,6 @@ import sys
 
 import pytest
 
-
 if sys.version_info == (3, 12, 0, "beta", 1) and "CI" in os.environ:
     pytest.skip(
         reason="Segfaults on GHA for unknown reasons",

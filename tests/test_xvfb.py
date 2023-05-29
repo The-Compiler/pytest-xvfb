@@ -36,7 +36,9 @@ needs_xvnc = pytest.mark.skipif(
         pytest.param("xvnc", marks=needs_xvnc),
     ]
 )
-def backend_args(request: pytest.FixtureRequest, monkeypatch: pytest.MonkeyPatch) -> Iterator[list[str]]:
+def backend_args(
+    request: pytest.FixtureRequest, monkeypatch: pytest.MonkeyPatch
+) -> Iterator[list[str]]:
     monkeypatch.delenv("DISPLAY")
     args = [] if request.param is None else ["--xvfb-backend", request.param]
     if request.param == "xephyr":
@@ -63,7 +65,9 @@ def test_xvfb_available(pytester: pytest.Pytester, backend_args: list[str]) -> N
     assert result.ret == 0
 
 
-def test_empty_display(pytester: pytest.Pytester, monkeypatch: pytest.MonkeyPatch, backend_args: list[str]) -> None:
+def test_empty_display(
+    pytester: pytest.Pytester, monkeypatch: pytest.MonkeyPatch, backend_args: list[str]
+) -> None:
     if backend_args == ["--xvfb-backend", "xephyr"]:
         pytest.skip("Xephyr needs a host display")
 
@@ -81,7 +85,9 @@ def test_empty_display(pytester: pytest.Pytester, monkeypatch: pytest.MonkeyPatc
     assert result.ret == 0
 
 
-def test_xvfb_unavailable(pytester: pytest.Pytester, monkeypatch: pytest.MonkeyPatch) -> None:
+def test_xvfb_unavailable(
+    pytester: pytest.Pytester, monkeypatch: pytest.MonkeyPatch
+) -> None:
     monkeypatch.setenv("PATH", "")
     monkeypatch.setenv("DISPLAY", ":42")
     pytester.makepyfile(
@@ -98,7 +104,9 @@ def test_xvfb_unavailable(pytester: pytest.Pytester, monkeypatch: pytest.MonkeyP
     assert result.ret == 0
 
 
-def test_xvfb_unavailable_explicit(pytester: pytest.Pytester, monkeypatch: pytest.MonkeyPatch, backend_args: list[str]) -> None:
+def test_xvfb_unavailable_explicit(
+    pytester: pytest.Pytester, monkeypatch: pytest.MonkeyPatch, backend_args: list[str]
+) -> None:
     """If an explicitly chosen backend is unavailable: Hard error."""
     if not backend_args:
         pytest.skip("Already tested above")
@@ -119,7 +127,9 @@ def test_xvfb_unavailable_explicit(pytester: pytest.Pytester, monkeypatch: pytes
     assert result.ret == pytest.ExitCode.USAGE_ERROR
 
 
-def test_no_xvfb_arg(pytester: pytest.Pytester, monkeypatch: pytest.MonkeyPatch, backend_args: list[str]) -> None:
+def test_no_xvfb_arg(
+    pytester: pytest.Pytester, monkeypatch: pytest.MonkeyPatch, backend_args: list[str]
+) -> None:
     monkeypatch.setenv("DISPLAY", ":42")
     pytester.makepyfile(
         """
@@ -135,7 +145,9 @@ def test_no_xvfb_arg(pytester: pytest.Pytester, monkeypatch: pytest.MonkeyPatch,
 
 
 @pytest.mark.parametrize("configured", [True, False])
-def test_screen_size(pytester: pytest.Pytester, configured: bool, backend_args: list[str]) -> None:
+def test_screen_size(
+    pytester: pytest.Pytester, configured: bool, backend_args: list[str]
+) -> None:
     if backend_args == ["--xvfb-backend", "xvnc"]:
         pytest.skip("Seems to be unsupported with Xvnc")
 
@@ -181,7 +193,9 @@ def test_screen_size(pytester: pytest.Pytester, configured: bool, backend_args: 
     assert result.ret == 0
 
 
-def test_failing_start(pytester: pytest.Pytester, monkeypatch: pytest.MonkeyPatch, backend_args: list[str]) -> None:
+def test_failing_start(
+    pytester: pytest.Pytester, monkeypatch: pytest.MonkeyPatch, backend_args: list[str]
+) -> None:
     pytester.makeini(
         """
         [pytest]
@@ -210,7 +224,9 @@ def test_failing_start(pytester: pytest.Pytester, monkeypatch: pytest.MonkeyPatc
         (["--no-xvfb"], "2 passed"),
     ],
 )
-def test_no_xvfb_marker(pytester: pytest.Pytester, args: list[str], outcome: str, backend_args: list[str]) -> None:
+def test_no_xvfb_marker(
+    pytester: pytest.Pytester, args: list[str], outcome: str, backend_args: list[str]
+) -> None:
     pytester.makepyfile(
         """
         import pytest
@@ -248,7 +264,9 @@ def test_xvfb_fixture(pytester: pytest.Pytester, backend_args: list[str]) -> Non
     assert result.ret == 0
 
 
-def test_early_display(monkeypatch: pytest.MonkeyPatch, pytester: pytest.Pytester, backend_args: list[str]) -> None:
+def test_early_display(
+    monkeypatch: pytest.MonkeyPatch, pytester: pytest.Pytester, backend_args: list[str]
+) -> None:
     """Make sure DISPLAY is set in a session-scoped fixture already."""
     pytester.makepyfile(
         """
