@@ -7,6 +7,7 @@ import sys
 
 import pytest
 import pyvirtualdisplay
+import pyvirtualdisplay.display
 
 xvfb_instance = None
 
@@ -47,24 +48,24 @@ class Xvfb:
         self.args = config.getini("xvfb_args") or []
         self.xauth = config.getini("xvfb_xauth")
         self.backend = config.getoption("--xvfb-backend")
-        self.display = None
-        self._virtual_display = None
+        self.display: int | None = None
+        self._virtual_display: pyvirtualdisplay.display.Display | None = None
 
     def start(self) -> None:
-        self._virtual_display = pyvirtualdisplay.Display(  # type: ignore[attr-defined]
+        self._virtual_display = pyvirtualdisplay.display.Display(
             backend=self.backend,
             size=(self.width, self.height),
             color_depth=self.colordepth,
             use_xauth=self.xauth,
             extra_args=self.args,
         )
-        assert self._virtual_display is not None  # mypy
         self._virtual_display.start()
         self.display = self._virtual_display.display
         assert self._virtual_display.is_alive()
 
     def stop(self) -> None:
         if self.display is not None:  # starting worked
+            assert self._virtual_display is not None  # mypy
             self._virtual_display.stop()
 
 
