@@ -1,6 +1,11 @@
 pytest-xvfb changelog
 =====================
 
+v3.1.1
+------
+
+- Same as v3.1.0, but with proper version number and fully released.
+
 v3.1.0
 ------
 
