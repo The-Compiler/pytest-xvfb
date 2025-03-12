@@ -40,6 +40,13 @@ class XvfbExitedError(Exception):
     pass
 
 
+class Hookspec:
+
+    def pytest_xvfb_disable(self, config: pytest.Config) -> bool:
+        """Return bool from this hook to disable pytest-xvfb."""
+        ...
+
+
 class Xvfb:
     def __init__(self, config: pytest.Config) -> None:
         self.width = int(config.getini("xvfb_width"))
@@ -91,10 +98,19 @@ def pytest_addoption(parser: pytest.Parser) -> None:
     )
 
 
+def pytest_addhooks(pluginmanager: pytest.PluginManager) -> None:
+    pluginmanager.add_hookspecs(Hookspec)
+
+
 def pytest_configure(config: pytest.Config) -> None:
     global xvfb_instance
 
-    no_xvfb = config.getoption("--no-xvfb") or is_xdist_master(config)
+    no_xvfb = (
+        config.getoption("--no-xvfb")
+        or is_xdist_master(config)
+        or any(config.pluginmanager.hook.pytest_xvfb_disable(config=config))
+    )
+
     backend = config.getoption("--xvfb-backend")
 
     if no_xvfb:

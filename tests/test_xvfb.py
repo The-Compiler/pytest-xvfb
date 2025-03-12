@@ -144,6 +144,29 @@ def test_no_xvfb_arg(
     assert result.ret == 0
 
 
+def test_disable_hook(
+    pytester: pytest.Pytester, monkeypatch: pytest.MonkeyPatch, backend_args: list[str]
+) -> None:
+    monkeypatch.setenv("DISPLAY", ":42")
+    pytester.makepyfile(
+        conftest="""
+            def pytest_xvfb_disable(config):
+                return True
+        """
+    )
+    pytester.makepyfile(
+        """
+        import os
+
+        def test_display():
+            assert os.environ['DISPLAY'] == ':42'
+    """
+    )
+    assert os.environ["DISPLAY"] == ":42"
+    result = pytester.runpytest(*backend_args)
+    assert result.ret == 0
+
+
 @pytest.mark.parametrize("configured", [True, False])
 def test_screen_size(
     pytester: pytest.Pytester, configured: bool, backend_args: list[str]

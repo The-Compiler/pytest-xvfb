@@ -42,6 +42,10 @@ due to incompatibilities with PyVirtualDisplay and Ubuntu 22.04's tightvncserver
 You can mark tests with ``@pytest.mark.no_xvfb`` to skip them when they're
 running with Xvfb.
 
+By implementing the `pytest_xvfb_disable(config: pytest.Config)` pytest hook,
+you can dynamically decide whether pytest-xvfb should be disabled (by returning
+`True` from such a hook).
+
 A ``xvfb`` fixture is available with the following attributes:
 
 - ``width``: The configured width of the screen.

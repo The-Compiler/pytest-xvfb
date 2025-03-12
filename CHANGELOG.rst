@@ -7,6 +7,7 @@ v3.1.0
 - Support for Python 3.7 and 3.8 is now dropped, while official support for
   3.12 and 3.13 was added (with no code changes required).
 - ``pytest.ini`` (required to run self-tests) is now included in sdists (#39).
+- New ``pytest_xvfb_disable`` hook to dynamically disable pytest-xvfb.
 
 v3.0.0
 ------
