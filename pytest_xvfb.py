@@ -41,8 +41,7 @@ class XvfbExitedError(Exception):
 
 
 class Hookspec:
-
-    def pytest_xvfb_disable(self, config: pytest.Config) -> bool:
+    def pytest_xvfb_disable(self, config: pytest.Config) -> bool:  # type: ignore[empty-body]
         """Return bool from this hook to disable pytest-xvfb."""
         ...
 
@@ -98,7 +97,7 @@ def pytest_addoption(parser: pytest.Parser) -> None:
     )
 
 
-def pytest_addhooks(pluginmanager: pytest.PluginManager) -> None:
+def pytest_addhooks(pluginmanager: pytest.PytestPluginManager) -> None:
     pluginmanager.add_hookspecs(Hookspec)
 
 
