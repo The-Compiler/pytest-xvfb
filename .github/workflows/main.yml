@@ -49,6 +49,9 @@ jobs:
   deploy:
     runs-on: ubuntu-latest
     needs: [tests, windows, lint]
+    environment: pypi
+    permissions:
+      id-token: write
     steps:
     - uses: actions/checkout@v4
     - uses: actions/setup-python@v5
@@ -62,7 +65,3 @@ jobs:
     - name: Publish package to PyPI
       if: github.event_name == 'push' && startsWith(github.event.ref, 'refs/tags')
       uses: pypa/gh-action-pypi-publish@release/v1
-      with:
-        user: __token__
-        password: ${{ secrets.pypi_token }}
-
