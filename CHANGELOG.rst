@@ -1,6 +1,12 @@
 pytest-xvfb changelog
 =====================
 
+v3.1.0
+------
+
+- Support for Python 3.7 and 3.8 is now dropped, while official support for
+  3.12 and 3.13 was added (with no code changes required).
+
 v3.0.0
 ------
 
@@ -8,7 +14,7 @@ v3.0.0
   place of Xvfb (e.g. for visual inspection but on a remote system or a
   consistent screen size needed).
 - Support for Python 3.5 and 3.6 is now dropped, while official support for 3.9,
-  3.10 and 3.11 was added (with no code chances required).
+  3.10 and 3.11 was added (with no code changes required).
 - The ``Xvfb`` instance is now no longer saved in pytest's ``config`` object as
   ``config.xvfb`` anymore, and only available via the ``xvfb`` fixture.
 - Xvfb is now shut down as late as possible (via an ``atexit`` hook registered
