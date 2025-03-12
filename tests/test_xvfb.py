@@ -208,9 +208,7 @@ def test_screen_size(
             assert root.winfo_screenwidth() == {width}
             assert root.winfo_screenheight() == {height}
             assert root.winfo_screendepth() == {depth}
-    """.format(
-            width=expected_width, height=expected_height, depth=expected_depth
-        )
+    """.format(width=expected_width, height=expected_height, depth=expected_depth)
     )
     result = pytester.runpytest(*backend_args)
     assert result.ret == 0
@@ -362,7 +360,7 @@ def test_xvfb_with_xauth(pytester: pytest.Pytester, backend_args: list[str]) -> 
     )
     result = pytester.runpytest("-s", *backend_args)
     # Get and parse the XAUTHORITY: line
-    authline = next(l for l in result.outlines if l.startswith("XAUTHORITY:"))
+    authline = next(line for line in result.outlines if line.startswith("XAUTHORITY:"))
     authfile = authline.split(" ", 1)[1]
 
     assert result.ret == 0
