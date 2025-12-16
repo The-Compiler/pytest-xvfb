@@ -73,7 +73,15 @@ class Xvfb:
             import time
 
             self._wmprocess = EasyProcess(self.wm).start()
-            time.sleep(5)
+            counter = 100
+            while (
+                EasyProcess(["xprop", "-root", "_NET_SUPPORTING_WM_CHECK"])
+                .call()
+                .return_code
+                != 0
+            ) and counter > 0:
+                time.sleep(0.1)
+                counter -= 1
         self.display = self._virtual_display.display
         assert self._virtual_display.is_alive()
 
