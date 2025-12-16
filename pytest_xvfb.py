@@ -52,10 +52,12 @@ class Xvfb:
         self.height = int(config.getini("xvfb_height"))
         self.colordepth = int(config.getini("xvfb_colordepth"))
         self.args = config.getini("xvfb_args") or []
-        self.xauth = config.getini("xvfb_xauth")
+        self.wm = config.getini("xvfb_windowmanager")
+        self.xauth = True if self.wm else config.getini("xvfb_xauth")
         self.backend = config.getoption("--xvfb-backend")
         self.display: int | None = None
         self._virtual_display: pyvirtualdisplay.display.Display | None = None
+        self._wmprocess = None
 
     def start(self) -> None:
         self._virtual_display = pyvirtualdisplay.display.Display(
@@ -66,12 +68,26 @@ class Xvfb:
             extra_args=self.args,
         )
         self._virtual_display.start()
+        if self.wm:
+            from easyprocess import EasyProcess
+            import time
+
+            self._wmprocess = EasyProcess(self.wm).start()
+            time.sleep(5)
         self.display = self._virtual_display.display
         assert self._virtual_display.is_alive()
+
+    def __del__(self) -> None:
+        if self._wmprocess:
+            self._wmprocess.stop()
+            self._wmprocess = None
 
     def stop(self) -> None:
         if self.display is not None:  # starting worked
             assert self._virtual_display is not None  # mypy
+            if self._wmprocess:
+                self._wmprocess.stop()
+                self._wmprocess = None
             self._virtual_display.stop()
 
 
@@ -95,6 +111,7 @@ def pytest_addoption(parser: pytest.Parser) -> None:
         default=False,
         type="bool",
     )
+    parser.addini("xvfb_windowmanager", "Run window manager", type="string", default="")
 
 
 def pytest_addhooks(pluginmanager: pytest.PytestPluginManager) -> None:

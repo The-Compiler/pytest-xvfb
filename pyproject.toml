@@ -28,7 +28,7 @@ classifiers = [
     "License :: OSI Approved :: MIT License",
 ]
 requires-python = ">=3.9"
-dependencies = ["pytest>=2.8.1", "pyvirtualdisplay>=1.3"]
+dependencies = ["pytest>=2.8.1", "pyvirtualdisplay>=1.3", "easyprocess"]
 
 [project.urls]
 Homepage = "https://github.com/The-Compiler/pytest-xvfb"
