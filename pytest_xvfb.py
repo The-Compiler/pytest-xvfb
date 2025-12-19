@@ -75,10 +75,10 @@ class Xvfb:
             self._wmprocess = EasyProcess(self.wm).start()
             counter = 100
             while (
-                EasyProcess(["xprop", "-root", "_NET_SUPPORTING_WM_CHECK"])
+                "window id"
+                not in EasyProcess(["xprop", "-root", "_NET_SUPPORTING_WM_CHECK"])
                 .call()
-                .return_code
-                != 0
+                .stdout
             ) and counter > 0:
                 time.sleep(0.1)
                 counter -= 1
