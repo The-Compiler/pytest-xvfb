@@ -8,8 +8,18 @@ import pyvirtualdisplay
 
 import pytest_xvfb
 
+windowmanager = "herbstluftwm"
+
 xauth_available = any(
     os.access(os.path.join(path, "xauth"), os.X_OK)
+    for path in os.environ.get("PATH", "").split(os.pathsep)
+)
+wm_available = any(
+    os.access(os.path.join(path, windowmanager), os.X_OK)
+    for path in os.environ.get("PATH", "").split(os.pathsep)
+)
+wmctrl_available = any(
+    os.access(os.path.join(path, "wmctrl"), os.X_OK)
     for path in os.environ.get("PATH", "").split(os.pathsep)
 )
 
@@ -367,3 +377,26 @@ def test_xvfb_with_xauth(pytester: pytest.Pytester, backend_args: list[str]) -> 
     # Make sure the authfile is deleted
     assert not os.path.exists(authfile)
     assert os.environ.get("XAUTHORITY") == original_auth
+
+
+@pytest.mark.skipif(not wm_available, reason="no windowmanager")
+@pytest.mark.skipif(not wmctrl_available, reason="no wmctrl")
+def test_xvfb_with_wm(pytester: pytest.Pytester, backend_args: list[str]) -> None:
+    pytester.makeini(
+        f"""
+        [pytest]
+        xvfb_windowmanager = {windowmanager}
+    """
+    )
+    pytester.makepyfile(
+        f"""
+        import os
+        from easyprocess import EasyProcess
+
+        def test_wm():
+            assert "{windowmanager}" in EasyProcess(['wmctrl', '-m']).call().stdout
+    """
+    )
+    result = pytester.runpytest("-s", *backend_args)
+
+    assert result.ret == 0
